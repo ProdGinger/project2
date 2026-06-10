@@ -532,25 +532,25 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("**최저임금 인상률 (%)**")
 col_s1, col_n1 = st.sidebar.columns([3, 2])
 with col_s1:
-    st.slider("wage_slider", 0.0, 25.0, 0.5, key="min_wage", on_change=sync_wage_num, label_visibility="collapsed")
+    st.slider("wage_slider", 0.0, 25.0, step=0.5, key="min_wage", on_change=sync_wage_num, label_visibility="collapsed")
 with col_n1:
-    st.number_input("wage_num", 0.0, 25.0, 0.5, key="min_wage_num", on_change=sync_wage_slider, label_visibility="collapsed")
+    st.number_input("wage_num", min_value=0.0, max_value=25.0, step=0.5, key="min_wage_num", on_change=sync_wage_slider, label_visibility="collapsed")
 
 # 2. 청년지원금
 st.sidebar.markdown("**청년 지원금 규모 (연간/조 원)**")
 col_s2, col_n2 = st.sidebar.columns([3, 2])
 with col_s2:
-    st.slider("youth_slider", 0.0, 10.0, 0.1, key="youth_subsidy", on_change=sync_youth_num, label_visibility="collapsed")
+    st.slider("youth_slider", 0.0, 10.0, step=0.1, key="youth_subsidy", on_change=sync_youth_num, label_visibility="collapsed")
 with col_n2:
-    st.number_input("youth_num", 0.0, 10.0, 0.1, key="youth_subsidy_num", on_change=sync_youth_slider, label_visibility="collapsed")
+    st.number_input("youth_num", min_value=0.0, max_value=10.0, step=0.1, key="youth_subsidy_num", on_change=sync_youth_slider, label_visibility="collapsed")
 
 # 3. 출산장려금
 st.sidebar.markdown("**출산 장려금 (자녀당/만 원)**")
 col_s3, col_n3 = st.sidebar.columns([3, 2])
 with col_s3:
-    st.slider("birth_slider", 0, 10000, 500, key="birth_subsidy", on_change=sync_birth_num, label_visibility="collapsed")
+    st.slider("birth_slider", 0, 10000, step=500, key="birth_subsidy", on_change=sync_birth_num, label_visibility="collapsed")
 with col_n3:
-    st.number_input("birth_num", 0, 10000, 500, key="birth_subsidy_num", on_change=sync_birth_slider, label_visibility="collapsed")
+    st.number_input("birth_num", min_value=0, max_value=10000, step=500, key="birth_subsidy_num", on_change=sync_birth_slider, label_visibility="collapsed")
 
 # 4. 탄소세
 st.sidebar.markdown("**탄소세 도입 여부 및 세율**")
@@ -558,33 +558,33 @@ st.sidebar.checkbox("탄소세 공식 도입", key="carbon_tax_toggle")
 if st.session_state.carbon_tax_toggle:
     col_s4, col_n4 = st.sidebar.columns([3, 2])
     with col_s4:
-        st.slider("carbon_slider", 10000, 150000, 5000, key="carbon_tax_rate", on_change=sync_carbon_num, label_visibility="collapsed")
+        st.slider("carbon_slider", 10000, 150000, step=5000, key="carbon_tax_rate", on_change=sync_carbon_num, label_visibility="collapsed")
     with col_n4:
-        st.number_input("carbon_num", 10000, 150000, 5000, key="carbon_tax_rate_num", on_change=sync_carbon_slider, label_visibility="collapsed")
+        st.number_input("carbon_num", min_value=10000, max_value=150000, step=5000, key="carbon_tax_rate_num", on_change=sync_carbon_slider, label_visibility="collapsed")
 
 # 5. 대중교통 예산
 st.sidebar.markdown("**대중교통 예산 증액률 (%)**")
 col_s5, col_n5 = st.sidebar.columns([3, 2])
 with col_s5:
-    st.slider("transit_slider", -50, 150, 5, key="transit_budget", on_change=sync_transit_num, label_visibility="collapsed")
+    st.slider("transit_slider", -50, 150, step=5, key="transit_budget", on_change=sync_transit_num, label_visibility="collapsed")
 with col_n5:
-    st.number_input("transit_num", -50, 150, 5, key="transit_budget_num", on_change=sync_transit_slider, label_visibility="collapsed")
+    st.number_input("transit_num", min_value=-50, max_value=150, step=5, key="transit_budget_num", on_change=sync_transit_slider, label_visibility="collapsed")
 
 # 6. 근로시간
 st.sidebar.markdown("**주당 근로시간 상한 (시간)**")
 col_s6, col_n6 = st.sidebar.columns([3, 2])
 with col_s6:
-    st.slider("hours_slider", 35, 60, 1, key="working_hours", on_change=sync_hours_num, label_visibility="collapsed")
+    st.slider("hours_slider", 35, 60, step=1, key="working_hours", on_change=sync_hours_num, label_visibility="collapsed")
 with col_n6:
-    st.number_input("hours_num", 35, 60, 1, key="working_hours_num", on_change=sync_hours_slider, label_visibility="collapsed")
+    st.number_input("hours_num", min_value=35, max_value=60, step=1, key="working_hours_num", on_change=sync_hours_slider, label_visibility="collapsed")
 
 # 7. R&D 투자
 st.sidebar.markdown("**R&D 및 AI 투자 규모 (조 원)**")
 col_s7, col_n7 = st.sidebar.columns([3, 2])
 with col_s7:
-    st.slider("rd_slider", 0.0, 15.0, 0.5, key="rd_investment", on_change=sync_rd_num, label_visibility="collapsed")
+    st.slider("rd_slider", 0.0, 15.0, step=0.5, key="rd_investment", on_change=sync_rd_num, label_visibility="collapsed")
 with col_n7:
-    st.number_input("rd_num", 0.0, 15.0, 0.5, key="rd_investment_num", on_change=sync_rd_slider, label_visibility="collapsed")
+    st.number_input("rd_num", min_value=0.0, max_value=15.0, step=0.5, key="rd_investment_num", on_change=sync_rd_slider, label_visibility="collapsed")
 
 st.sidebar.markdown("---")
 
