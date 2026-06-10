@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 공공정책 시뮬레이터 (AI Public Policy Simulator)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Policy Input Control Panel -->
+        <aside class="sidebar" id="policy-controls">
+            <div class="sidebar-header">
+                <div class="logo-area">
+                    <div class="logo-icon">
+                        <i data-lucide="cpu" class="neon-icon"></i>
+                    </div>
+                    <div>
+                        <h1>AI 공공정책 시뮬레이터</h1>
+                        <span class="subtitle">AI Public Policy Simulator</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-scroll">
+                <div class="control-group">
+                    <h2 class="section-title"><i data-lucide="sliders" class="section-icon"></i>정책 변수 설정</h2>
+                    
+                    <!-- 최저임금 인상률 -->
+                    <div class="input-card">
+                        <div class="input-header">
+                            <label for="min-wage-rate">최저임금 인상률</label>
+                            <div class="input-badge-wrapper">
+                                <input type="number" id="min-wage-num" min="0" max="25" step="0.5" value="5.0" class="badge-input">%
+                            </div>
+                        </div>
+                        <input type="range" id="min-wage-rate" min="0" max="25" step="0.5" value="5.0" class="slider">
+                        <div class="slider-labels">
+                            <span>동결</span>
+                            <span>12%</span>
+                            <span>25%</span>
+                        </div>
+                    </div>
+
+                    <!-- 청년 지원금 규모 -->
+                    <div class="input-card">
+                        <div class="input-header">
+                            <label for="youth-subsidy">청년 지원금 규모 (연간)</label>
+                            <div class="input-badge-wrapper">
+                                <input type="number" id="youth-subsidy-num" min="0" max="10" step="0.1" value="2.5" class="badge-input">조 원
+                            </div>
+                        </div>
+                        <input type="range" id="youth-subsidy" min="0" max="10" step="0.1" value="2.5" class="slider">
+                        <div class="slider-labels">
+                            <span>없음</span>
+                            <span>5조</span>
+                            <span>10조 원</span>
+                        </div>
+                    </div>
+
+                    <!-- 출산 장려금 -->
+                    <div class="input-card">
+                        <div class="input-header">
+                            <label for="birth-subsidy">출산 장려금 (자녀당)</label>
+                            <div class="input-badge-wrapper">
+                                <input type="number" id="birth-subsidy-num" min="0" max="10000" step="500" value="2000" class="badge-input">만 원
+                            </div>
+                        </div>
+                        <input type="range" id="birth-subsidy" min="0" max="10000" step="500" value="2000" class="slider">
+                        <div class="slider-labels">
+                            <span>없음</span>
+                            <span>5,000만</span>
+                            <span>1억 원</span>
+                        </div>
+                    </div>
+
+                    <!-- 탄소세 도입 여부 및 세율 -->
+                    <div class="input-card">
+                        <div class="toggle-header">
+                            <label for="carbon-tax-toggle">탄소세 도입 여부</label>
+                            <label class="switch">
+                                <input type="checkbox" id="carbon-tax-toggle" checked>
+                                <span class="toggle-slider round"></span>
+                            </label>
+                        </div>
+                        <div id="carbon-tax-rate-container" class="sub-input-container">
+                            <div class="input-header sub-label">
+                                <label for="carbon-tax-rate">탄소세율 (톤당)</label>
+                                <div class="input-badge-wrapper highlight">
+                                    <input type="number" id="carbon-tax-rate-num" min="10000" max="150000" step="5000" value="50000" class="badge-input highlight">원
+                                </div>
+                            </div>
+                            <input type="range" id="carbon-tax-rate" min="10000" max="150000" step="5000" value="50000" class="slider slider-sub">
+                            <div class="slider-labels">
+                                <span>1만</span>
+                                <span>8만</span>
+                                <span>15만 원</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 대중교통 예산 증액 -->
+                    <div class="input-card">
+                        <div class="input-header">
+                            <label for="transit-budget">대중교통 예산 증액률</label>
+                            <div class="input-badge-wrapper">
+                                <input type="number" id="transit-budget-num" min="-50" max="150" step="5" value="20" class="badge-input">%
+                            </div>
+                        </div>
+                        <input type="range" id="transit-budget" min="-50" max="150" step="5" value="20" class="slider">
+                        <div class="slider-labels">
+                            <span>-50% (감축)</span>
+                            <span>기존유지</span>
+                            <span>+150% (증액)</span>
+                        </div>
+                    </div>
+
+                    <!-- 추가 변수: 근로시간 제한 -->
+                    <div class="input-card">
+                        <div class="input-header">
+                            <label for="working-hours">주당 근로시간 상한</label>
+                            <div class="input-badge-wrapper">
+                                <input type="number" id="working-hours-num" min="35" max="60" step="1" value="52" class="badge-input">시간
+                            </div>
+                        </div>
+                        <input type="range" id="working-hours" min="35" max="60" step="1" value="52" class="slider">
+                        <div class="slider-labels">
+                            <span>35시간</span>
+                            <span>48시간</span>
+                            <span>60시간</span>
+                        </div>
+                    </div>
+
+                    <!-- 추가 변수: R&D 및 핵심기술 투자 -->
+                    <div class="input-card">
+                        <div class="input-header">
+                            <label for="rd-investment">R&D 및 AI 투자 규모</label>
+                            <div class="input-badge-wrapper">
+                                <input type="number" id="rd-investment-num" min="0" max="15" step="0.5" value="3.0" class="badge-input">조 원
+                            </div>
+                        </div>
+                        <input type="range" id="rd-investment" min="0" max="15" step="0.5" value="3.0" class="slider">
+                        <div class="slider-labels">
+                            <span>없음</span>
+                            <span>7.5조</span>
+                            <span>15조 원</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 직접 입력 및 추가 정책 제안 (Options) -->
+                <div class="input-card advanced-card">
+                    <div class="advanced-header" id="advanced-toggle">
+                        <span><i data-lucide="settings-2" class="section-icon"></i> 추가 자유 정책 제안</span>
+                        <i data-lucide="chevron-down" class="toggle-arrow" id="advanced-arrow"></i>
+                    </div>
+                    <div class="advanced-content hidden" id="advanced-content">
+                        <p class="adv-desc">수치 변수 외에 시뮬레이션에 결합할 정책 아이디어를 텍스트로 자유롭게 서술해 주십시오. (AI가 연동 분석함)</p>
+                        
+                        <div class="custom-text-policy-area">
+                            <textarea id="custom-policy-text" rows="3" placeholder="예: 주 4일제 도입, 신혼부부 공공주택 분양 우선권 부여, 법인세 2% 감면..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="run-simulation-btn" class="glow-btn">
+                    <span class="btn-text">AI 시뮬레이션 실행</span>
+                    <i data-lucide="play-circle" class="btn-icon"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header bar -->
+            <header class="main-header">
+                <div class="dashboard-title">
+                    <span class="badge">AI Engine v3.5-Medium</span>
+                    <h2>국가 거시 정책 예측 및 시뮬레이션 시스템</h2>
+                </div>
+                <div class="header-actions">
+                    <button id="reset-btn" class="btn btn-secondary">
+                        <i data-lucide="rotate-ccw"></i> 설정 초기화
+                    </button>
+                    <span class="system-time" id="live-time">2026.06.10 18:31:14</span>
+                </div>
+            </header>
+
+            <!-- Dashboard Screens -->
+            <div class="screen-container">
+                
+                <!-- SCREEN 1: Welcome / Idle State -->
+                <div id="screen-welcome" class="dashboard-screen active">
+                    <div class="welcome-box">
+                        <div class="processor-animation">
+                            <div class="core-glow"></div>
+                            <div class="orbit orbit-1"></div>
+                            <div class="orbit orbit-2"></div>
+                            <div class="orbit orbit-3"></div>
+                            <div class="data-pulse"></div>
+                        </div>
+                        <h3>정책 시뮬레이션 모델 수립 대기 중</h3>
+                        <p class="welcome-desc">
+                            좌측 제어판에서 정책 변수를 조정하고 아래의 <strong>시뮬레이션 실행</strong> 버튼을 눌러주십시오.<br>
+                            AI 엔진이 수집된 통계 데이터베이스(인구, 경제성장, 기업경기지수)와 연동하여 10개년 파급 효과를 실시간으로 모델링합니다.
+                        </p>
+                        <div class="policy-quick-presets">
+                            <h4>추천 정책 패키지 프리셋</h4>
+                            <div class="preset-buttons">
+                                <button class="preset-btn" data-preset="growth">
+                                    <i data-lucide="trending-up"></i> 성장 중심 패키지
+                                </button>
+                                <button class="preset-btn" data-preset="welfare">
+                                    <i data-lucide="heart"></i> 복지·저출생 해결 패키지
+                                </button>
+                                <button class="preset-btn" data-preset="green">
+                                    <i data-lucide="leaf"></i> 그린 뉴딜 탄소중립 패키지
+                                </button>
+                                <button class="preset-btn" data-preset="custom-balanced">
+                                    <i data-lucide="scale"></i> 균형 발전 패키지
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 2: Loading / AI Processing State -->
+                <div id="screen-loading" class="dashboard-screen">
+                    <div class="loading-overlay">
+                        <div class="processing-header">
+                            <div class="spinner"></div>
+                            <h3>AI 다차원 시뮬레이션 연산 중...</h3>
+                            <p>선택하신 최저임금, 보조금, 기후 정책 파급 효과 모델링을 진행합니다.</p>
+                        </div>
+                        
+                        <!-- AI Stages -->
+                        <div class="ai-stages">
+                            <div class="stage-item" id="stage-demographics">
+                                <div class="stage-status-icon"><i data-lucide="circle-dashed" class="spinning"></i></div>
+                                <div class="stage-info">
+                                    <h4>[1단계] 인구 데이터 분석 (Demographics Analysis)</h4>
+                                    <p class="stage-status-text">대기 중...</p>
+                                </div>
+                            </div>
+                            <div class="stage-item" id="stage-economics">
+                                <div class="stage-status-icon"><i data-lucide="circle-dashed"></i></div>
+                                <div class="stage-info">
+                                    <h4>[2단계] 경제 파급 효과 분석 (Economic Impact Analysis)</h4>
+                                    <p class="stage-status-text">대기 중...</p>
+                                </div>
+                            </div>
+                            <div class="stage-item" id="stage-cases">
+                                <div class="stage-status-icon"><i data-lucide="circle-dashed"></i></div>
+                                <div class="stage-info">
+                                    <h4>[3단계] 과거 정책 사례 검색 및 비교 (Historical Case Matching)</h4>
+                                    <p class="stage-status-text">대기 중...</p>
+                                </div>
+                            </div>
+                            <div class="stage-item" id="stage-scenarios">
+                                <div class="stage-status-icon"><i data-lucide="circle-dashed"></i></div>
+                                <div class="stage-info">
+                                    <h4>[4단계] 정책 시행 시나리오 생성 (Multi-Scenario Modeling)</h4>
+                                    <p class="stage-status-text">대기 중...</p>
+                                </div>
+                            </div>
+                            <div class="stage-item" id="stage-results">
+                                <div class="stage-status-icon"><i data-lucide="circle-dashed"></i></div>
+                                <div class="stage-info">
+                                    <h4>[5단계] 결과 예측 및 보고서 합성 (Forecasting & Synthesizing)</h4>
+                                    <p class="stage-status-text">대기 중...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terminal Output Console -->
+                        <div class="terminal-container">
+                            <div class="terminal-header">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                                <span class="terminal-title">AI Engine Console Log</span>
+                            </div>
+                            <div class="terminal-body" id="terminal-log">
+                                <div class="log-line">[SYSTEM] Simulation Engine Initialized. Ready for inputs.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 3: Dashboard Results State -->
+                <div id="screen-dashboard" class="dashboard-screen">
+                    
+                    <!-- Summary Score & Key Metrics Grid -->
+                    <div class="metrics-grid">
+                        <!-- Score Badge Card -->
+                        <div class="metric-card main-score-card">
+                            <div class="score-ring-container">
+                                <svg class="score-ring" width="120" height="120">
+                                    <circle class="score-ring-bg" cx="60" cy="60" r="50"></circle>
+                                    <circle class="score-ring-fill" cx="60" cy="60" r="50" id="score-circle"></circle>
+                                </svg>
+                                <div class="score-text">
+                                    <span class="score-letter" id="score-grade">A</span>
+                                    <span class="score-num" id="score-points">88점</span>
+                                </div>
+                            </div>
+                            <div class="score-desc">
+                                <h3>AI 종합 정책 지수</h3>
+                                <p id="score-summary-text">재정 건전성과 지속가능성, 저출생 해소 측면의 통합 점수입니다.</p>
+                            </div>
+                        </div>
+
+                        <!-- Demographic KPI -->
+                        <div class="metric-card">
+                            <div class="metric-meta">
+                                <span>합계출산율 (10년 후)</span>
+                                <i data-lucide="baby" class="card-icon pop-icon"></i>
+                            </div>
+                            <div class="metric-val">
+                                <span id="kpi-birth-rate">1.04명</span>
+                            </div>
+                            <div class="metric-trend" id="kpi-birth-trend">
+                                <span class="up"><i data-lucide="trending-up"></i> +0.32명 (현재 대비)</span>
+                            </div>
+                        </div>
+
+                        <!-- Economic KPI -->
+                        <div class="metric-card">
+                            <div class="metric-meta">
+                                <span>실질 GDP 성장률 (평균)</span>
+                                <i data-lucide="line-chart" class="card-icon eco-icon"></i>
+                            </div>
+                            <div class="metric-val">
+                                <span id="kpi-gdp-rate">+2.35%</span>
+                            </div>
+                            <div class="metric-trend" id="kpi-gdp-trend">
+                                <span class="down"><i data-lucide="trending-down"></i> -0.15%p (영향 발생)</span>
+                            </div>
+                        </div>
+
+                        <!-- Environment KPI -->
+                        <div class="metric-card">
+                            <div class="metric-meta">
+                                <span>탄소 배출량 감소율</span>
+                                <i data-lucide="leaf" class="card-icon green-icon"></i>
+                            </div>
+                            <div class="metric-val">
+                                <span id="kpi-carbon-reduction">-18.4%</span>
+                            </div>
+                            <div class="metric-trend" id="kpi-carbon-trend">
+                                <span class="up-green"><i data-lucide="arrow-down-right"></i> 환경 지표 대폭 개선</span>
+                            </div>
+                        </div>
+
+                        <!-- Fiscal KPI -->
+                        <div class="metric-card">
+                            <div class="metric-meta">
+                                <span>재정 건전성 등급</span>
+                                <i data-lucide="wallet" class="card-icon fiscal-icon"></i>
+                            </div>
+                            <div class="metric-val">
+                                <span id="kpi-fiscal-status">안정</span>
+                            </div>
+                            <div class="metric-trend" id="kpi-fiscal-trend">
+                                <span>국가 채무 비율 45.2% 예상</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts & Analysis Layout -->
+                    <div class="dashboard-body-grid">
+                        
+                        <!-- Left Block: Multi-Chart Visualization -->
+                        <div class="chart-section-card">
+                            <div class="chart-header">
+                                <h3><i data-lucide="activity" class="panel-icon"></i> 10개년 미래 지표 예측 시뮬레이션</h3>
+                                <div class="tab-buttons">
+                                    <button class="tab-btn active" data-chart="economy">경제 & 고용</button>
+                                    <button class="tab-btn" data-chart="population">인구 & 사회</button>
+                                    <button class="tab-btn" data-chart="environment">환경 & 재정</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Chart Container -->
+                            <div class="chart-container">
+                                <canvas id="projectionChart"></canvas>
+                            </div>
+
+                            <!-- Scenario Mode Selector -->
+                            <div class="scenario-selector-container">
+                                <span>시나리오 예측 모드 선택:</span>
+                                <div class="scenario-toggles">
+                                    <button class="scenario-toggle-btn" data-scenario="pessimistic">
+                                        <span class="indicator red"></span> 비관 시나리오
+                                    </button>
+                                    <button class="scenario-toggle-btn active" data-scenario="neutral">
+                                        <span class="indicator blue"></span> 중립 (AI 기준)
+                                    </button>
+                                    <button class="scenario-toggle-btn" data-scenario="optimistic">
+                                        <span class="indicator green"></span> 낙관 시나리오
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Block: AI Analytical Insights -->
+                        <div class="ai-report-card">
+                            <div class="card-title">
+                                <h3><i data-lucide="file-text" class="panel-icon-gold"></i> AI 종합 정책 분석 보고서</h3>
+                                <span class="update-time" id="report-timestamp">실시간 연산됨</span>
+                            </div>
+                            <div class="report-scroll-container">
+                                <!-- Summary Description -->
+                                <p class="report-lead-text" id="report-lead">
+                                    최저임금 5.0% 인상 및 출산율 지원 패키지가 복합적으로 결합하여, 인구 감소세를 완화하는 한편 일시적 내수 위축 우려가 있습니다.
+                                </p>
+                                
+                                <div class="report-section">
+                                    <div class="report-section-title green-title">
+                                        <i data-lucide="plus-circle"></i> 핵심 강점 및 긍정 효과
+                                    </div>
+                                    <ul class="bullet-list" id="report-strengths">
+                                        <li>출산장려금 2,000만 원 지급 정책은 신혼가구 초기 비용 부담을 완화해 합계출산율 반등(10년 후 1.04명 도달)의 촉매 역할을 수행합니다.</li>
+                                        <li>탄소세 도입(톤당 5만 원)은 화석연료 대체 및 신재생에너지 인프라 전환을 유도하여 10개년 탄소 배출량을 약 18.4% 감축합니다.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="report-section">
+                                    <div class="report-section-title red-title">
+                                        <i data-lucide="minus-circle"></i> 주요 위험 및 잠재 부작용
+                                    </div>
+                                    <ul class="bullet-list" id="report-risks">
+                                        <li>최저임금 인상률(5.0%)과 청년보조금 등 정부 지출 증가가 맞물려, 자영업 고용 한계선 붕괴 및 국가 채무 증가 요인으로 작용합니다.</li>
+                                        <li>기후 에너지 비용 상승에 따라 탄소세 부과 대상인 에너지 집약형 2차 제조업군의 수출 경쟁력이 일시적으로 저하될 우려가 존재합니다.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="report-section">
+                                    <div class="report-section-title blue-title">
+                                        <i data-lucide="help-circle"></i> AI가 제안하는 정책 조정안 (Recommendations)
+                                    </div>
+                                    <div class="recommendation-box" id="report-recommendations">
+                                        탄소세 과세 재원을 전액 일반 재정에 편입하기보다, <strong>'대중교통 무료 혜택 연동형 탄소 배당제'</strong>로 전환하여 청년/저소득층의 가처분 소득 감소를 상쇄하고 내수 경기를 활성화해야 합니다. 또한, 최저임금 급등 여파를 흡수하기 위해 고용 유지가 증명된 소상공인에 한정해 청년 고용 보조금을 우회 집중 지원하는 탄력 설계가 요구됩니다.
+                                    </div>
+                                </div>
+
+                                <div class="report-section" id="report-custom-policy-section">
+                                    <div class="report-section-title gold-title">
+                                        <i data-lucide="sparkles"></i> 제안 정책 결합 피드백 (Custom Policy)
+                                    </div>
+                                    <div class="recommendation-box" id="report-custom-policy-feedback" style="background-color: rgba(56, 189, 248, 0.03); border-color: rgba(56, 189, 248, 0.2);">
+                                        추가 자유 제안 정책을 입력하지 않았습니다.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Bottom Grid: Historical Case Matching & Interactive Chatbot -->
+                    <div class="dashboard-bottom-grid">
+                        
+                        <!-- Historical Cases Area -->
+                        <div class="cases-card">
+                            <h3><i data-lucide="archive" class="panel-icon"></i> 과거 유사 정책 매칭 사례 (Historical Matches)</h3>
+                            <p class="section-desc">글로벌 및 국내 정책 시계열 데이터에서 유사 입력 조합의 과거 실사례를 매칭합니다.</p>
+                            
+                            <div class="cases-flex-container" id="matched-cases-list">
+                                <!-- Card 1 -->
+                                <div class="case-subcard">
+                                    <div class="case-badge">독일</div>
+                                    <h4>하르츠 개혁 (2003~2005)</h4>
+                                    <p>근로시간 유연화와 적극적 청년 지원금 제도의 혼합 정책입니다. 실업률은 극적으로 줄었으나 노동계 내 양극화가 유발되었습니다. (현재 정책 변수 유사도 82%)</p>
+                                    <div class="similarity-bar-container">
+                                        <span>유사도 82%</span>
+                                        <div class="sim-bar"><div class="sim-fill" style="width: 82%;"></div></div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2 -->
+                                <div class="case-subcard">
+                                    <div class="case-badge">스웨덴</div>
+                                    <h4>기후-보육 패키지 (1998)</h4>
+                                    <p>탄소세 단계적 대폭 인상과 아동보육 보조금 지급을 동시에 연계한 대표적 성공 사례로 경제 성장과 기후 대응을 함께 달성했습니다. (현재 정책 변수 유사도 78%)</p>
+                                    <div class="similarity-bar-container">
+                                        <span>유사도 78%</span>
+                                        <div class="sim-bar"><div class="sim-fill" style="width: 78%;"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chatbot Assistant -->
+                        <div class="chatbot-card">
+                            <div class="chatbot-header">
+                                <div class="bot-info">
+                                    <div class="bot-avatar"><i data-lucide="bot"></i></div>
+                                    <div>
+                                        <h4>AI 정책 수립 비서</h4>
+                                        <span>시뮬레이션 기반 실시간 질의응답</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chat-container">
+                                <div class="chat-body" id="chat-messages">
+                                    <div class="chat-bubble bot">
+                                        시뮬레이션 연산 결과를 바탕으로 질문을 받습니다. 아래 추천 질문을 클릭하시거나 하단 입력창에 질문을 입력해 주십시오.
+                                    </div>
+                                </div>
+
+                                <!-- Recommendation Chips -->
+                                <div class="chat-chips" id="chat-preset-chips">
+                                    <button class="chip-btn" data-question="최저임금 인상이 청년 고용에 미치는 구체적 영향은 무엇인가요?">
+                                        최저임금 인상이 고용에 미치는 영향?
+                                    </button>
+                                    <button class="chip-btn" data-question="출산 장려금을 더 늘리면 합계출산율이 1.0명을 넘을 수 있을까요?">
+                                        출산장려금 1억 증액 시 출산율 예측?
+                                    </button>
+                                    <button class="chip-btn" data-question="탄소세 도입에 따른 물가 상승 압력을 완화할 방안은 무엇입니까?">
+                                        탄소세 여파 및 물가 안정화 방안?
+                                    </button>
+                                </div>
+
+                                <div class="chat-input-area">
+                                    <input type="text" id="chat-input-box" placeholder="정책적 보완점 또는 지표 연동 원리에 대해 질문하세요..." />
+                                    <button id="send-chat-btn" class="send-btn"><i data-lucide="send"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="app.js"></script>
+</body>
+</html>
