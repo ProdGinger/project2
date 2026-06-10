@@ -18,14 +18,14 @@ st.markdown("""
 <style>
     /* Premium dark mode style overrides */
     [data-testid="stSidebar"] {
-        background-color: #0f141f !important;
-        border-right: 1px solid #242c3d !important;
+        background-color: #ffffff !important;
+        border-right: 1px solid #dbe2ea !important;
         padding-top: 1rem;
     }
     
     .stApp {
-        background-color: #0a0d13 !important;
-        color: #f3f4f6 !important;
+        background-color: #f8fafc !important;
+        color: #1e293b !important;
     }
     
     /* Input adjustments */
@@ -35,12 +35,12 @@ st.markdown("""
     
     /* Custom Card Container */
     .metric-card {
-        background-color: #151b26;
-        border: 1px solid #242c3d;
-        border-radius: 12px;
-        padding: 18px;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         margin-bottom: 12px;
-        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
         transition: transform 0.2s, border-color 0.2s;
     }
     .metric-card:hover {
@@ -510,8 +510,18 @@ with col_logo:
     st.write("")
     st.markdown("<h3>🤖</h3>", unsafe_allow_html=True)
 with col_desc:
-    st.title("AI 공공정책 시뮬레이터")
-    st.markdown("<p style='color:#9ca3af; margin-top:-15px;'>AI Public Policy Simulator (v3.5-Medium Python)</p>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    padding:25px;
+    border-radius:18px;
+    color:white;
+    margin-bottom:20px;
+    ">
+    <h1>🤖 AI 공공정책 시뮬레이터</h1>
+    <p>정책 효과를 10년 단위로 시뮬레이션하고 분석합니다.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # SIDEBAR: Policy Control panel
 st.sidebar.markdown("### ⚙️ 정책 변수 설정")
