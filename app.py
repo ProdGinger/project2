@@ -686,7 +686,7 @@ if not st.session_state.simulated or st.session_state.outputs is None:
     with welcome_col2:
         st.markdown("""
         <div style='text-align: center; background-color: #151b26; border: 1px solid #242c3d; border-radius: 16px; padding: 40px;'>
-            <div style='font-size: 50px; margin-bottom: 20px;'>⚙️</div>
+            <div style='color: #ffffff; font-size: 50px; margin-bottom: 20px;'>⚙️</div>
             <h3 style='margin-bottom: 12px;'>정책 시뮬레이션 모델 수립 대기 중</h3>
             <p style='color: #ffffff; font-size: 14px; line-height: 1.6;'>
                 좌측 제어판에서 정책 변수들의 수치(슬라이더 또는 타이핑)를 조정하고 하단의 <strong>시뮬레이션 실행</strong> 버튼을 눌러주십시오.<br>
